@@ -1,5 +1,6 @@
 # StaBiCut
 **StaBiCut** (Stable and Biologically aware Cutoff prioritization) is an R-based framework for **stability- and biology-aware survival cutoff prioritization** in candidate biomarker studies.
+
 <img width="523" height="208.3" alt="Stabicut_logo" src="https://github.com/user-attachments/assets/cff56554-0402-4642-bf6e-a7197daf5df1" />
 
 Rather than proposing a new survival test, StaBiCut is designed as a **decision layer on top of classical survival analysis**. It helps users determine whether a survival-associated expression cutoff is not only statistically separative, but also **directionally coherent, distributionally plausible, locally reproducible under resampling, and practically interpretable**.
