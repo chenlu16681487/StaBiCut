@@ -348,7 +348,7 @@ The publication-linked TCGA-CRC application used:
 - gene-specific direction priors derived from the following 11 CAC multi-omics candidates:
   
 SPOCK2, PYCR1, CA4, CES1, ABCB1, ZG16, TNXB, HMCN2, MEP1A, SLC37A2, CHGB 
-Representative plotting workflows, stability summaries, and representative-seed display workflows are included in the testing scripts used during method development.
+- Representative plotting workflows, stability summaries, and representative-seed display workflows are included in the testing scripts used during method development.
 
 Current scope and limitations
 StaBiCut is currently designed for candidate biomarker prioritization, not for exhaustive genome-wide high-throughput production use without additional engineering.
