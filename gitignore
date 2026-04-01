@@ -1,0 +1,66 @@
+# ================================
+# StaBiCut repository .gitignore
+# ================================
+
+# ---- Source code should always be tracked ----
+# Main and helper .R scripts are source code, not temporary files.
+# Do NOT ignore:
+# - R/modules_StaBiCut_v2.R
+# - R/run_StaBiCut_v2.R
+# - R/Panel_helper_StaBiCut_v2.R
+# - testing scripts
+# - example scripts
+
+# ---- R / RStudio transient files only ----
+.Rhistory
+.Rapp.history
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+
+# ---- renv local environment (keep lockfile only) ----
+renv/library/
+renv/python/
+renv/staging/
+renv/cache/
+renv/.cache/
+!renv.lock
+
+# ---- OS / editor junk ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+.vscode/
+
+# ---- Temporary / rerunnable scratch folders ----
+tmp/
+temp/
+cache/
+logs/
+rendered/
+fig_tmp/
+*.tmp
+
+# ---- Optional private local data folders ----
+data_private/
+raw_private/
+local_only/
+
+# ---- Output folders you do NOT want to sync ----
+# Comment these out if you later decide to track them.
+output/tmp/
+output/cache/
+output/logs/
+boot_rds/tmp/
+stability_n1000_with_rds/tmp/
+
+# ---- Always keep key repository assets tracked ----
+!README.md
+!LICENSE
+!CITATION.cff
+!requirements.R
+!sessionInfo.txt
+!renv.lock
