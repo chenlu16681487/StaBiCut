@@ -143,7 +143,8 @@ Mathematical definitions are documented in the Supplementary Methods and may lat
 
 Repository structure
 The current public release is organized as a script-style research repository, with future migration to a more package-like structure if needed.
-- StaBiCut/
+```
+StaBiCut/
 ├── R/
 │   ├── modules_StaBiCut_v2.R
 │   ├── run_StaBiCut_v2.R
@@ -159,6 +160,7 @@ The current public release is organized as a script-style research repository, w
 ├── CITATION.cff
 ├── sessionInfo.txt
 └── .gitignore
+```
 
 At present, the core implementation is centered on:
 - run_batch_sur_cutpoint_analysis_v2() 
@@ -210,6 +212,7 @@ Supported direction labels are:
 - adverse_high 
 The current implementation assumes TCGA-style sample barcodes when identifying tumor versus normal samples. For non-TCGA datasets, users should provide explicit sample-type labels or preprocess the dataset before running the current scripts.
 Example object structures used in the present manuscript-linked workflow:
+```
 - Expression matrix on TPM scale:
 > mrna_expr_tpm[1:5,1:3]
         TCGA-AA-3688-01A-01R-0905-07 TCGA-G4-6298-01A-11R-1723-07 TCGA-AA-3672-01A-01R-0905-07
@@ -233,7 +236,7 @@ TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682 TCGA-A6-2
  [1] "SPOCK2"  "PYCR1"   "CA4"     "CES1"    "ABCB1"   "ZG16"    "TNXB"    "HMCN2"   "MEP1A"  
 [10] "SLC37A2" "CHGB"
 
-•	Optional gene prior table:
+- Optional gene prior table:
 > gene_prior_table[1:5,1:2]
     Gene    expected_dir
 1 SPOCK2    adverse_high
@@ -241,7 +244,7 @@ TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682 TCGA-A6-2
 3    CA4 protective_high
 4   CES1 protective_high
 5  ABCB1 protective_high
-
+```
 
 Benchmark gene set used in the current manuscript-linked workflow
 
