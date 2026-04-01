@@ -211,7 +211,6 @@ Supported direction labels are:
 The current implementation assumes TCGA-style sample barcodes when identifying tumor versus normal samples. For non-TCGA datasets, users should provide explicit sample-type labels or preprocess the dataset before running the current scripts.
 Example object structures used in the present manuscript-linked workflow:
 •	Expression matrix on TPM scale:
-```
 > mrna_expr_tpm[1:5,1:3]
         TCGA-AA-3688-01A-01R-0905-07 TCGA-G4-6298-01A-11R-1723-07 TCGA-AA-3672-01A-01R-0905-07
 MT-CO2                      25914.66                     40456.34                     15299.70
@@ -219,10 +218,8 @@ MT-CO3                      26244.67                     37331.63               
 MT-ND4                      13102.97                     25710.66                     11878.03
 MT-CO1                      11398.30                     14542.93                     14488.23
 MT-ATP6                     11133.31                     13070.55                     14943.64
-```
 
 •	Clinical data frame:
-```
 > clinicalSE[1:5,1:3]
                                                   barcode      patient           sample
 TCGA-AA-3688-01A-01R-0905-07 TCGA-AA-3688-01A-01R-0905-07 TCGA-AA-3688 TCGA-AA-3688-01A
@@ -230,17 +227,13 @@ TCGA-G4-6298-01A-11R-1723-07 TCGA-G4-6298-01A-11R-1723-07 TCGA-G4-6298 TCGA-G4-6
 TCGA-AA-3672-01A-01R-0905-07 TCGA-AA-3672-01A-01R-0905-07 TCGA-AA-3672 TCGA-AA-3672-01A
 TCGA-G4-6314-01A-11R-1723-07 TCGA-G4-6314-01A-11R-1723-07 TCGA-G4-6314 TCGA-G4-6314-01A
 TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682 TCGA-A6-2682-01A
-```
 
-```
 •	Gene set:
 > geneset 
  [1] "SPOCK2"  "PYCR1"   "CA4"     "CES1"    "ABCB1"   "ZG16"    "TNXB"    "HMCN2"   "MEP1A"  
 [10] "SLC37A2" "CHGB"
-```
 
 •	Optional gene prior table:
-```
 > gene_prior_table[1:5,1:2]
     Gene    expected_dir
 1 SPOCK2    adverse_high
@@ -248,7 +241,7 @@ TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682-01A-01R-1410-07 TCGA-A6-2682 TCGA-A6-2
 3    CA4 protective_high
 4   CES1 protective_high
 5  ABCB1 protective_high
-```
+
 
 Benchmark gene set used in the current manuscript-linked workflow
 
