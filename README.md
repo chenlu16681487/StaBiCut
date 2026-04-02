@@ -193,10 +193,7 @@ StaBiCut currently relies on the following R packages:
 - openxlsx 
 - splines 
 - forcats 
-Some testing or plotting scripts may additionally use:
-- mixtools 
-- forestplot 
-- fmsb 
+
 Exact dependency versions are not hard-coded in this README. Please record them in sessionInfo.txt when generating publication-linked results.
 
 Input requirements
