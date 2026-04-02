@@ -202,7 +202,7 @@ The main runner expects:
 - Clinical data frame matched to the tumor samples, containing survival information. 
 - Gene set specifying the candidate genes to be evaluated. 
 - Optional gene prior table with columns: 
-o	Gene: Symbol 
+o	Gene:  Gene Symbol 
 o	expected_dir：prior expected direction of genes 
 Supported direction labels are:
 - protective_high 
