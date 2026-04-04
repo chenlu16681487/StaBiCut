@@ -71,12 +71,15 @@ For the mathematical definitions of the scoring components and stability metrics
 
 ---
   
-  ## Quick start in 3 commands
+  ## Quick start by sourcing the StaBiCut scripts
   
   ```r
-source("R/modules_StaBiCut_v2.R")
-source("R/run_StaBiCut_v2.R")
-source("R/Panel_helper_StaBiCut_v2.R")
+source("scripts/run_StaBiCut_v2.R")
+source("scripts/modules_core_StaBiCut_v2.R")
+source("scripts/modules_plot_single_StaBiCut_v2.R")
+source("scripts/modules_stability_summary_StaBiCut_v2.R")
+source("scripts/modules_seed_selection_StaBiCut_v2.R")
+source("scripts/multi-gene panel_helper_StaBiCut_v2.R")
 
 Then run:
 set.seed(1)
@@ -145,22 +148,44 @@ Repository structure
 The current public release is organized as a script-style research repository, with future migration to a more package-like structure if needed.
 ```
 StaBiCut/
-├── R/
-│   ├── modules_StaBiCut_v2.R
-│   ├── run_StaBiCut_v2.R
-│   └── Panel_helper_StaBiCut_v2.R
-├── examples/
-│   ├── example_run.R
+├── example/
 │   ├── example_gene_prior_table.csv
-│   └── example_output_dictionary.csv
-├── figures/
-│   └── StaBiCut_workflow_overview.png
-├── README.md
-├── LICENSE
+│   ├── examples_main_crc_tcga.R
+│   └── examples_representative_seed_rebuild.R
+├── example_data/
+│   ├── expected_dir_table_11DEGs.csv
+│   ├── clinicalSE_11DEGs_tcga_crc.Rdata
+│   └── exprset_11DEGs_tcga_crc.Rdata
+├── example_output/
+│   ├── example_output_dictionary_multiseed_stability_summary.csv
+│   ├── example_output_dictionary_representative_seed_selection_summary.csv
+│   ├── StaBiCut_Stability_nboot1000_Summary20260314.xlsx
+│   ├── nboot1000_multiseed_composite_mean_summary.pdf
+│   ├── stability_dualpanel_v220260314.pdf
+│   ├── representative_seed_ZG16.xlsx
+│   ├── ZG16_panel_main_v2.pdf
+│   ├── stability_n1000_5genes_main_1.pdf
+│   └── stability_n1000_5genes_main_2.pdf
+├── methods/
+│   └── Supplemental methods.pdf
+├── scripts/
+│   ├── run_StaBiCut_v2.R
+│   ├── modules_core_StaBiCut_v2.R
+│   ├── modules_plot_single_StaBiCut_v2.R
+│   ├── modules_seed_selection_StaBiCut_v2.R
+│   ├── modules_stability_summary_StaBiCut_v2.R
+│   └── multi-gene panel_helper_StaBiCut_v2.R
 ├── CITATION.cff
-├── sessionInfo.txt
-└── .gitignore
+├── LICENSE
+├── README.md
+├── Stabicut_logo.png
+├── gitignore
+├── requirements.R
+└── sessionInfo.txt
 ```
+## Example data note
+
+To keep the GitHub repository lightweight and easy to clone, the public release includes compact example data rather than the full TCGA-CRC analysis object. The `example_data/` folder provides a minimal demonstration dataset for the 11 candidate genes used in the StaBiCut workflow, including a matched expression matrix, clinical table, and expected-direction table.
 
 At present, the core implementation is centered on:
 - run_batch_sur_cutpoint_analysis_v2() 
@@ -174,9 +199,12 @@ At present, the core implementation is centered on:
 
 Installation
 Option 1: source the scripts directly
-source("R/modules_StaBiCut_v2.R")
-source("R/run_StaBiCut_v2.R")
-source("R/Panel_helper_StaBiCut_v2.R")
+source("scripts/run_StaBiCut_v2.R")
+source("scripts/modules_core_StaBiCut_v2.R")
+source("scripts/modules_plot_single_StaBiCut_v2.R")
+source("scripts/modules_stability_summary_StaBiCut_v2.R")
+source("scripts/modules_seed_selection_StaBiCut_v2.R")
+source("scripts/multi-gene panel_helper_StaBiCut_v2.R")
 
 Option 2: install from GitHub
 (Recommended only after the repository is formally reorganized as a standard R package.)
@@ -253,9 +281,12 @@ These genes were pre-nominated from longitudinal CAC transcriptomic and proteomi
 
 Minimal example
 ```
-source("R/modules_StaBiCut_v2.R")
-source("R/run_StaBiCut_v2.R")
-source("R/Panel_helper_StaBiCut_v2.R")
+source("scripts/run_StaBiCut_v2.R")
+source("scripts/modules_core_StaBiCut_v2.R")
+source("scripts/modules_plot_single_StaBiCut_v2.R")
+source("scripts/modules_stability_summary_StaBiCut_v2.R")
+source("scripts/modules_seed_selection_StaBiCut_v2.R")
+source("scripts/multi-gene panel_helper_StaBiCut_v2.R")
 
 geneset <- c("SPOCK2","PYCR1","CA4","CES1","ABCB1","ZG16",
              "TNXB","HMCN2","MEP1A","SLC37A2","CHGB")
