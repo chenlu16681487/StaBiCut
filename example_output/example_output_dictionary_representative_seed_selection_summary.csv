@@ -1,0 +1,21 @@
+Column name,Category,Definition
+Gene,representative_seed,Candidate gene used to identify the most representative seed for downstream figure display.
+representative_seed,representative_seed,"Recommended seed for figure-level visualization, selected computationally to best match the across-seed central tendency of the specified gene."
+gene_mean,representative_seed,Across-seed mean composite score of the specified gene.
+gene_mean_rank,representative_seed,Rank of the specified gene when genes are ordered by across-seed mean composite score.
+modal_rank,representative_seed,Most frequently observed within-seed rank of the specified gene across all evaluated seeds.
+seed,seed_summary,Random seed used for one full StaBiCut run.
+composite_score,seed_summary,Composite score of the specified gene in the corresponding seed-specific run.
+distance_to_mean,seed_summary,Absolute distance between the specified gene's seed-specific composite score and its across-seed mean composite score.
+rank_in_seed,seed_summary,Within-seed rank of the specified gene based on descending composite score.
+distance_rank_to_mode,seed_summary,Absolute distance between the specified gene's seed-specific rank and its modal rank across all seeds.
+distance_rank_to_meanrank,seed_summary,Absolute distance between the specified gene's seed-specific rank and its across-seed mean rank.
+score_cor_with_mean,seed_summary,Correlation between the full gene-level composite-score vector in the current seed and the across-seed mean composite-score vector.
+rank_cor_with_mean,seed_summary,Correlation between the full gene-level ranking in the current seed and the across-seed mean ranking.
+mean_abs_rank_diff,seed_summary,"Mean absolute difference between seed-specific gene ranks and across-seed mean ranks, summarizing global ranking deviation."
+score_closeness_norm,seed_summary,Rescaled similarity score reflecting how closely the specified gene's seed-specific composite score matches its across-seed mean score (higher = closer).
+rank_closeness_norm,seed_summary,Rescaled similarity score reflecting how closely the specified gene's seed-specific rank matches its modal rank (higher = closer).
+global_consistency_norm,seed_summary,Rescaled summary score reflecting how closely the overall gene ranking pattern in the current seed matches the across-seed mean ranking structure.
+representative_score,seed_summary,"Integrated representativeness score used to select the recommended seed, combining gene-specific score closeness, rank closeness, and global ranking consistency."
+composite_mean,mean_summary,Across-seed mean composite score for each gene.
+composite_sd,mean_summary,Across-seed standard deviation of the composite score for each gene.
