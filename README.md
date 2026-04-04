@@ -71,8 +71,10 @@ For the mathematical definitions of the scoring components and stability metrics
 
 ---
   
-  ## Quick start by sourcing the StaBiCut scripts
-  
+  ## Quick start
+
+Load the StaBiCut scripts from the `scripts/` folder before running the example workflows:
+
   ```r
 source("scripts/run_StaBiCut_v2.R")
 source("scripts/modules_core_StaBiCut_v2.R")
