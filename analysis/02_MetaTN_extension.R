@@ -1,40 +1,32 @@
 ############################################################
-# StaBiCut v2 paper analysis
-# Script 02: External Meta-TN extension
+# StaBiCut v2 — Meta biological consistency layer
+# File: StaBiCut_v2_Meta_biological_consistency_20260731.R
 #
 # Purpose:
-#   Estimate an independent multi-cohort tumor-normal biological-consistency
-#   layer for the 11 candidate genes and, when Script 01 output is available,
-#   integrate that layer with the GSE39582 external StaBiCut scores.
+#   Build an external multi-cohort tumor-normal (TN) biological-consistency
+#   layer for the 11 StaBiCut temporal candidate genes.
 #
-# Design principles:
-#   - Each tumor-normal cohort is analyzed separately; expression matrices are
-#     not pooled across studies or platforms.
-#   - Cohort-specific standardized effects are combined by meta-analysis.
-#   - The resulting Meta-TN support is direction-gated before entering the
-#     five-component external composite score.
+# Design:
+#   - GSE39582 remains tumor-only survival/cutoff validation.
+#   - Independent GEO tumor-normal cohorts are NOT merged into one expression
+#     matrix. Each cohort is analyzed internally first to avoid cohort/platform
+#     confounding.
+#   - Per-cohort TN effects are meta-analyzed across cohorts to generate a
+#     Meta-TN reference layer that can replace the TCGA-reference TN sensitivity
+#     layer in external reporting.
 #
-# Suggested directory layout:
-#   paper_analysis/
-#     01_external_validation_GSE39582.R
-#     02_MetaTN_extension.R
-#     data/
-#       expected_dir_table_11DEGs.csv
-#       MetaTN/
-#         GSE21510_series_matrix.txt.gz
-#         GSE32323_series_matrix.txt.gz
-#         GSE41258_series_matrix.txt.gz
-#         GSE68468_series_matrix.txt.gz
-#     results/
-#       GSE39582_external_validation/
-#         GSE39582_StaBiCut_external_results.csv
+# Expected local input directory:
+#   E:/OpenCode/ZG16_validation/Meta_data
+# containing files such as:
+#   GSE21510_series_matrix.txt.gz
+#   GSE32323_series_matrix.txt.gz
+#   GSE41258_series_matrix.txt.gz
 #
-# Output:
-#   results/MetaTN_extension/
-#
-# Notes:
-#   - All paths are relative to this script by default.
-#   - Edit only the configuration block below when using another layout.
+# Optional input:
+#   E:/OpenCode/ZG16_validation/GSE39582_StaBiCut_external_validation/
+#     GSE39582_StaBiCut_external_results.csv
+#   If present, this script appends a Meta-TN layer to the GSE39582 external
+#   StaBiCut result table and recalculates the five-layer external score.
 ############################################################
 
 rm(list = ls())
@@ -42,28 +34,19 @@ rm(list = ls())
 ## =========================
 ## 0. Paths and configuration
 ## =========================
-get_script_dir <- function() {
-  args <- commandArgs(trailingOnly = FALSE)
-  file_arg <- grep("^--file=", args, value = TRUE)
-  if (length(file_arg) > 0) {
-    return(dirname(normalizePath(sub("^--file=", "", file_arg[1]), mustWork = TRUE)))
-  }
-  normalizePath(getwd(), mustWork = TRUE)
-}
-
-analysis_dir <- get_script_dir()
-data_dir     <- file.path(analysis_dir, "data")
-meta_dir     <- file.path(data_dir, "MetaTN")
-out_dir      <- file.path(analysis_dir, "results", "MetaTN_extension")
-pdf_dir      <- file.path(out_dir, "figures")
+base_dir <- "E:/OpenCode/ZG16_validation"
+meta_dir <- file.path(base_dir, "New_meta")
+out_dir  <- file.path(base_dir, "TCGA_meta0731")
+pdf_dir  <- file.path(out_dir, "figures")
 dir.create(pdf_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-## Optional output from Script 01. If absent, the Meta-TN summary is still
-## generated, but integrated GSE39582 scores and comparison figures are skipped.
-external_result_dir <- file.path(analysis_dir, "results", "GSE39582_external_validation")
-external_result_file <- file.path(external_result_dir, "GSE39582_StaBiCut_external_results.csv")
-prior_table_file <- file.path(data_dir, "expected_dir_table_11DEGs.csv")
+## Optional GSE39582 external result table from v7 runner
+external_result_file <- file.path(
+  base_dir,
+  "GSE39582_StaBiCut_external_validation",
+  "GSE39582_StaBiCut_external_results.csv"
+)
 
 ## Candidate genes and expected hazard directions used in StaBiCut v2.
 ## If expected_dir_table_11DEGs.csv exists, it is used; otherwise this fallback
@@ -84,8 +67,9 @@ fallback_expected_dir <- data.frame(
 )
 
 prior_candidates <- c(
-  prior_table_file,
-  file.path(data_dir, "expected_dir_table_11DEGs.csv"),
+  file.path(base_dir, "ZG16_validation", "expected_dir_table_11DEGs.csv"),
+  file.path(base_dir, "expected_dir_table_11DEGs.csv"),
+  file.path(base_dir, "scripts", "expected_dir_table_11DEGs.csv"),
   file.path(getwd(), "expected_dir_table_11DEGs.csv")
 )
 prior_candidates <- prior_candidates[file.exists(prior_candidates)]
@@ -101,44 +85,45 @@ if (length(prior_candidates) > 0) {
 
 ## Dataset configuration.
 ## Notes:
-##   - GSE21510/GSE32323 are GPL570.
-##   - GSE41258/GSE68468 are GPL96 and are appropriate for per-cohort
-##     effect-size meta-analysis, not direct expression-matrix pooling.
+##   - GSE21510/GSE32323 are GPL570; GSE41258 is GPL96.
+##   - The primary Meta-TN model contains exactly three non-overlapping cohorts.
 ##   - include_regex/exclude_regex are intentionally conservative. All sample
 ##     assignments are exported for manual review.
 dataset_config <- data.frame(
-  GSE = c("GSE21510", "GSE32323", "GSE41258", "GSE68468"),
-  platform = c("GPL570", "GPL570", "GPL96", "GPL96"),
-  file = file.path(meta_dir, paste0(c("GSE21510", "GSE32323", "GSE41258", "GSE68468"), "_series_matrix.txt.gz")),
+  GSE = c("GSE21510", "GSE32323", "GSE41258"),
+  platform = c("GPL570", "GPL570", "GPL96"),
+  file = file.path(
+    meta_dir,
+    paste0(c("GSE21510", "GSE32323", "GSE41258"), "_series_matrix.txt.gz")
+  ),
+  expected_tumor = c(19L, 17L, 182L),
+  expected_normal = c(25L, 17L, 53L),
   ## Primary colorectal tumor terms.
   tumor_regex = c(
     "(^|[,;: _-])(cancer|tumou?r|carcinoma|adenocarcinoma|crc)([,;: _-]|$)",
     "(^|[,;: _-])(cancer|tumou?r|carcinoma|adenocarcinoma|crc)([,;: _-]|$)",
-    "primary[ _-]*tumou?r|primary[ _-]*cancer|colon[ _-]*adenocarcinoma|colon[ _-]*carcinoma",
-    "primary[ _-]*colon[ _-]*(cancer|carcinoma)|colon[ _-]*adenocarcinoma|colon[ _-]*carcinoma"
+    "primary[ _-]*tumou?r|primary[ _-]*cancer|colon[ _-]*adenocarcinoma|colon[ _-]*carcinoma"
   ),
   ## Normal colorectal mucosa terms.
   normal_regex = c(
     "normal|non[- ]?cancer|non[- ]?tumou?r|mucosa",
     "normal|non[- ]?cancer|non[- ]?tumou?r|mucosa",
-    "normal[ _-]*(colon|colorectal|mucosa)|corresponding[ _-]*normal[ _-]*mucosa",
-    "normal[ _-]*(colon|colorectal|mucosa)|matched[ _-]*normal[ _-]*mucosa|normal$"
+    "normal[ _-]*(colon|colorectal|mucosa)|corresponding[ _-]*normal[ _-]*mucosa"
   ),
   ## Exclude non-primary disease states from the TN layer.
   exclude_regex = c(
+    "cell[ _-]*line|aza|5[- ]?aza|metastasis|liver|lung|polyp|adenoma|xenograft|\\blcm\\b|laser[ _-]*capture|microdissect",
     "cell[ _-]*line|aza|5[- ]?aza|metastasis|liver|lung|polyp|adenoma|xenograft",
-    "cell[ _-]*line|aza|5[- ]?aza|metastasis|liver|lung|polyp|adenoma|xenograft",
-    "metastasis|normal[ _-]*liver|normal[ _-]*lung|polyp|adenoma|cell[ _-]*line|breast|prostate|xenograft|_ez",
-    "metastasis|normal[ _-]*liver|normal[ _-]*lung|polyp|adenoma|cell[ _-]*line|breast|prostate|xenograft|synthetic"
+    "metastasis|normal[ _-]*liver|normal[ _-]*lung|polyp|adenoma|microadenoma|cell[ _-]*line|breast|prostate|xenograft|_ez"
   ),
   stringsAsFactors = FALSE
 )
 
-## Optional: for GSE21510, some samples are LCM and some are homogenized.
-## Keep FALSE by default because the GEO page states the normalized values are
-## log2 RMA and the script exports a review table. Set TRUE if manual inspection
-## confirms a clean homogenized tumor/normal subset should be used only.
-exclude_lcm_in_GSE21510 <- FALSE
+stopifnot(identical(dataset_config$GSE, c("GSE21510", "GSE32323", "GSE41258")))
+
+## GSE21510 contains separately normalized LCM and homogenized specimens.
+## Restrict the Meta-TN comparison to the homogenized tumor/normal subset.
+exclude_lcm_in_GSE21510 <- TRUE
 
 ## =========================
 ## 1. Packages
@@ -312,6 +297,57 @@ collapse_probe_to_gene <- function(expr_probe, probe_map, geneset = NULL) {
 }
 
 classify_samples <- function(clin, cfg_row) {
+  ## Cohort-specific inclusion rules, aligned 1:1 with the external
+  ## reproducibility forest meta-analysis (ZG16, 5 cohorts):
+  ##   - GSE21510 / GSE32323: homogenized bulk tissues only (title-based).
+  ##     LCM specimens are excluded because the LCM and homogenized batches
+  ##     were normalized separately.
+  ##   - GSE41258: official analysis set only ("included in analysis = Yes"),
+  ##     tissue == "primary tumor" (Tumor) or "normal colon" (Normal).
+  if (cfg_row$GSE %in% c("GSE21510", "GSE32323")) {
+    title_l <- tolower(clin$title)
+    class <- ifelse(grepl("cancer, homogenized", title_l, fixed = TRUE), "Tumor",
+             ifelse(grepl("normal, homogenized", title_l, fixed = TRUE), "Normal",
+                    "Other_or_excluded"))
+    return(data.frame(
+      sample = rownames(clin),
+      class = class,
+      review_text = clin$title,
+      stringsAsFactors = FALSE
+    ))
+  }
+
+  if (cfg_row$GSE == "GSE41258") {
+    ## The first characteristics block mixes "tissue:" and "cell line:" keys,
+    ## so the parser stores it under a generic name; locate the tissue column by
+    ## content, preferring characteristics_* columns over titles.
+    is_char_col <- grepl("^characteristics_", colnames(clin))
+    find_col <- function(clin, pattern, prefer_char = TRUE) {
+      hit <- vapply(clin, function(z) {
+        is.character(z) && any(grepl(pattern, tolower(z), fixed = FALSE), na.rm = TRUE)
+      }, logical(1))
+      ord <- if (prefer_char) order(is_char_col, decreasing = TRUE) else seq_along(hit)
+      nm <- names(hit)[ord][which(hit[ord])[1]]
+      nm
+    }
+    tissue_col <- find_col(clin, "primary tumor|normal colon", prefer_char = TRUE)
+    incl_col   <- if (!is.null(clin$included.in.analysis)) "included.in.analysis" else find_col(clin, "^included in analysis", prefer_char = FALSE)
+    tissue <- if (!is.null(tissue_col)) tolower(clin[[tissue_col]]) else rep("", nrow(clin))
+    incl   <- if (!is.null(incl_col)) tolower(clin[[incl_col]]) else rep("", nrow(clin))
+    class <- ifelse(incl == "yes" & tissue == "primary tumor", "Tumor",
+             ifelse(incl == "yes" & tissue == "normal colon", "Normal",
+                    "Other_or_excluded"))
+    return(data.frame(
+      sample = rownames(clin),
+      class = class,
+      review_text = paste0(
+        "tissue: ", clin[[if (!is.null(tissue_col)) tissue_col else colnames(clin)[1]]],
+        " ; included in analysis: ", clin[[if (!is.null(incl_col)) incl_col else colnames(clin)[1]]]
+      ),
+      stringsAsFactors = FALSE
+    ))
+  }
+
   text_cols <- vapply(clin, function(z) is.character(z) || is.factor(z), logical(1))
   sample_text <- apply(clin[, text_cols, drop = FALSE], 1, function(z) paste(z, collapse = " ; "))
   sample_text_l <- tolower(sample_text)
@@ -485,6 +521,18 @@ for (i in seq_len(nrow(dataset_config))) {
   sample_class <- classify_samples(gse$clin_raw, cfg)
   sample_class$GSE <- cfg$GSE
   sample_class$platform <- cfg$platform
+
+  observed_tumor <- sum(sample_class$class == "Tumor", na.rm = TRUE)
+  observed_normal <- sum(sample_class$class == "Normal", na.rm = TRUE)
+  if (observed_tumor != cfg$expected_tumor || observed_normal != cfg$expected_normal) {
+    failed_audit <- file.path(out_dir, paste0(cfg$GSE, "_FAILED_sample_class_review.csv"))
+    write.csv(sample_class, failed_audit, row.names = FALSE)
+    stop(
+      cfg$GSE, " sample-count audit failed: observed T=", observed_tumor,
+      ", N=", observed_normal, "; expected T=", cfg$expected_tumor,
+      ", N=", cfg$expected_normal, ". Review: ", failed_audit
+    )
+  }
 
   counts <- sample_class %>%
     dplyr::count(GSE, platform, class, name = "n") %>%
@@ -693,10 +741,8 @@ if (file.exists(external_result_file)) {
         height = 5.8
       )
 
-      discovery_rank_file <- file.path(
-        external_result_dir,
-        "TCGA_discovery_StaBiCut_rank_used.csv"
-      )
+      discovery_rank_file <- file.path(base_dir, "GSE39582_StaBiCut_external_validation",
+                                       "TCGA_discovery_StaBiCut_rank_used.csv")
       if (file.exists(discovery_rank_file)) {
         discovery_rank_table <- read.csv(discovery_rank_file, stringsAsFactors = FALSE)
       } else {
